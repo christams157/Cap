@@ -1,4 +1,4 @@
 # config.py
 
-API_KEY = "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" 
+API_KEY = "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" 
 
