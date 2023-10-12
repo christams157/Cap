@@ -1,1 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE-edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            background: url('static/Football-Stadium-Wallpaper-Mural.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            background-color: lightblue; /* Fallback color */
+        }
+
+        .header {
+            background: linear-gradient(45deg, #007BFF, #ffffff); /* Blue and White */
+            color: #6dff71; /* Lighter green text color */
+            text-align: center;
+            padding: 20px 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: glowing 4s linear infinite; /* Slower animation */
+            display: inline;
+            animation-timing-function: linear;
+        }
+        
+        @keyframes glowing {
+            0% {
+                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.6); /* No shadow */
+            }
+            25% {
+                text-shadow: 3px 0px 8px rgba(0, 0, 0, 0.6); /* Shadow on the right */
+            }
+            50% {
+                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.6); /* Shadow in the middle */
+            }
+            75% {
+                text-shadow: -3px 0px 8px rgba(0, 0, 0, 0.6); /* Shadow on the left */
+            }
+            100% {
+                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.6); /* Return to no shadow */
+            }
+        }
+        
+        .tabs {
+            background: linear-gradient(45deg, #007BFF, transparent); /* Transition from header to transparent */
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 0;
+            padding: 10px 0; /* Removed the horizontal padding */
+        }
+        
+        .tab {
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold; /* Added font-weight for bold text */
+            padding: 10px 30px; /* Added horizontal padding for spacing */
+        }
+        
+        .tab:hover {
+            background: #0056b3;
+        }
+        
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 800px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .input-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        .button-container {
+            text-align: center;
+        }
+
+        button {
+            background: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Center the chat box */
+        .chat-box {
+            position: fixed;
+            bottom: 0;
+            left: 10%; /* Adjust as needed */
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 80%;
+            max-width: 1000px;
+            z-index: 1;
+        }
+
+        .chat-messages {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* Align messages to the left */
+            height: 100%;
+        }
+
+        .response-message {
+            background: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            max-width: 800px;
+            align-self: flex-start;
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        /* Adjust the chat-gif styling to center it on the screen */
+        .chat-gif {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Fanstasy CappBalla</h1>
+    </div>
+
+    <div class="tabs">
+        <div class="tab" onclick="showTab('tab1')">Home</div>
+        <div class="tab" onclick="showTab('tab2')">Top Team</div>
+    </div>
+
+    <div class="container">
+        <div class="content tab-content" id="tab1">
+            <div class="input-container">
+                <textarea id="user_message" rows="5" cols="40" placeholder="Ask The Fantasy CappyBalla a Question"></textarea>
+                <button onclick="sendMessage()">Submit</button>
+            </div>
+            <div id="loadingGif" class="tab-content">
+                <img class="animated-loading" src="{{ url_for('static', filename='icegif-1080.gif') }}" alt="Loading GIF"/>
+                <img id="loadingText" src="{{ url_for('static', filename='loading-gif.gif') }}" alt="Loading Text"/>
+            </div>
+        </div>
+        <div class "content tab-content" id="tab2">
+        </div>
+    </div>
+
+
+    <!-- Add a GIF image here to overlay the chatbox longways -->
+    <!-- Remove the chat-gif section from within the chat-box -->
+    <div class="chat-gif">
+        <img src="{{ url_for('static', filename='icegif-1080.gif') }}" alt="GIF">
+    </div>
+
+    <!-- Chat Box -->
+    <div class="chat-box">
+        <div class="chat-messages" id="chat-messages">
+            <!-- Messages will be displayed here -->
+        </div>
+
+        <!-- Loading GIFs -->
+        <div id="loadingGif" class="tab-content" style="display: none;">
+            <img class="animated-loading" src="{{ url_for('static', filename='icegif-1080.gif') }}" alt="Loading GIF">
+            <img id="loadingText" src="{{ url_for('static', filename='loading-gif.gif') }}" alt="Loading Text">
+        </div>
+
+        <textarea class="chat-input" id="chat_message" placeholder="Type your message"></textarea>
+        <button onclick="sendChatMessage()">Send</button>
+    </div>
+    
+    <script>
+        function sendChatMessage() {
+            const chatMessage = document.getElementById('chat_message').value;
+            const chatMessages = document.getElementById('chat-messages');
+            const loadingGif = document.getElementById('loadingGif');
+            
+            // Display loading GIFs
+            loadingGif.style display = 'block';
+            
+            // Append the user's message to the chat box
+            const userMessageElement = document.createElement('p');
+            userMessageElement.textContent = `You: ${chatMessage}`;
+            chatMessages.appendChild(userMessageElement);
+            
+            // Clear the input field
+            document.getElementById('chat_message').value = '';
+            
+            // Send the user's message to the Flask application
+            sendToServer(chatMessage);
+        }
+
+        function updateFlaskResponse(response) {
+            const chatMessages = document.getElementById('chat-messages');
+            const loadingGif = document.getElementById('loadingGif');
+
+            // Hide the loading GIFs
+            loadingGif.style.display = 'none';
+
+            // Append the assistant's response to the chat box
+            const responseMessage = document.createElement('div');
+            responseMessage.classList.add('response-message');
+            responseMessage.textContent = `CappyBalla: ${response}`;
+            chatMessages.appendChild(responseMessage);
+        }
+
+        function sendToServer(userMessage) {
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_message: userMessage
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const assistantResponse = data.flask_response;
+                updateFlaskResponse(assistantResponse);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>
 
